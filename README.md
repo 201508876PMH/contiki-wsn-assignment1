@@ -70,6 +70,7 @@ After 5 seconds:
 Your time for entering code expired or the passcode was incorrect!...try again.
 ```
 On successtate:
+(_Ascii art from:_ https://www.asciiart.eu/art-and-design/mazes)
 ```
 You entered the CORRECT passcode!
 The program ends here, reboot for program restart.
