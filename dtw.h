@@ -6,6 +6,14 @@
 #include "sys/log.h"
 #include <math.h>
 
+/**
+ * @ This *.h file is ment for seperate logic to the original
+ * @ secretKnockDetector.c file.
+ * 
+ * @ Author: Peter Marcus Hoveling
+ * @ Date: 31/03/2021
+*/
+
 /* GLOBAL */
 static double matrix[10][10];
 static double cost[10][10];
@@ -19,6 +27,14 @@ void displayArray();
 double findSmallest(double val1, double val2, double val3);
 bool isPasswordAccepted(int userPasscodeArray[], int userTrialArray[]);
 
+/**
+ * Function for calculating the distance matrix
+ * ---
+ * Arguments: Two int arrays, the first being the original passcode
+ * and the second being the attempted passcode
+ * 
+ * Returns: None (void)
+*/
 void calcDistanceMatrix(int userPasscodeArray[], int userTrialArray[])
 {
     uint8_t i;
@@ -40,6 +56,15 @@ void calcDistanceMatrix(int userPasscodeArray[], int userTrialArray[])
     // displayDistanceMatrix();
 }
 
+/**
+ * Function to calculate the costmatrix and warping function
+ * Inspired from: https://towardsdatascience.com/an-illustrative-introduction-to-dynamic-time-warping-36aa98513b98
+ * ---
+ * Arguments: Two int arrays, the first being the original passcode
+ * and the second being the attempted passcode
+ * 
+ * Returns: None (void)
+*/
 void computeAccumulatedCostMatrix(int userPasscodeArray[], int userTrialArray[])
 {
     calcDistanceMatrix(userPasscodeArray, userTrialArray);
@@ -73,6 +98,17 @@ void computeAccumulatedCostMatrix(int userPasscodeArray[], int userTrialArray[])
     // displayCostMatrix();
 }
 
+/**
+ * Function for validating if attempted passcode vs. the original.
+ * Makes use of the dynamic time warping algorithm, were every
+ * value from the final cost array must be under 100, to be accepted
+ * as a valid code.
+ * ---
+ * Arguments: Two int arrays, the first being the original passcode
+ * and the second being the attempted passcode
+ * 
+ * Returns: A simple bool, either false or true
+ */
 bool isPasswordAccepted(int userPasscodeArray[], int userTrialArray[])
 {
     computeAccumulatedCostMatrix(userPasscodeArray, userTrialArray);
@@ -118,7 +154,6 @@ bool isPasswordAccepted(int userPasscodeArray[], int userTrialArray[])
         { // If down was the smallest
             row++;
         }
-        // printf("Curent Element: %d \n", (int)currentElement);
         currentElement = smallest;
         i++;
     }
@@ -126,8 +161,8 @@ bool isPasswordAccepted(int userPasscodeArray[], int userTrialArray[])
     uint8_t tjekMe;
     for (tjekMe = 0; tjekMe < 10; tjekMe++)
     {
-        if (shortestPath[tjekMe] > 105)
-        { //If any element is below threshold of 85
+        if (shortestPath[tjekMe] > 100)
+        { //If any element is below threshold of 100
             return false;
         }
     }
@@ -135,6 +170,12 @@ bool isPasswordAccepted(int userPasscodeArray[], int userTrialArray[])
     return true;
 }
 
+/**
+ * Function for finding the smallest value for a 3 given input
+ * ---
+ * Arguments: Three type double
+ * Returns: 1 double type, being the smallest of the given values
+ */
 double findSmallest(double val1, double val2, double val3)
 {
     double array[] = {val1, val2, val3};
@@ -151,6 +192,12 @@ double findSmallest(double val1, double val2, double val3)
     return smallest;
 }
 
+/**
+ * Function for printing cost matrix
+ * ---
+ * Arguments: None
+ * Returns: None (void)
+*/
 void displayCostMatrix()
 {
     int row = 0;
@@ -170,6 +217,12 @@ void displayCostMatrix()
     }
 }
 
+/**
+ * Function for printing the distance matrix
+ * ---
+ * Arguments: None
+ * Returns: None (void)
+*/
 void displayDistanceMatrix()
 {
     int row = 0;
@@ -189,6 +242,12 @@ void displayDistanceMatrix()
     }
 }
 
+/**
+ * Function for displaying any given array of size 10
+ * ---
+ * Arguments: int array
+ * Returns: none (void)
+*/
 void displayArray(int array[])
 {
     static int printCounter = 0;

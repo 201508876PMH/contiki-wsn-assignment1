@@ -6,6 +6,15 @@
 #include "sys/log.h"
 #include "dtw.h"
 
+/**
+ * @ This secretKnockDetector.c file is ment to be used in conjuction
+ * @ with the seperate logic file called dtw.h
+ * @ THIS PROGRAM HAS ONLY BEEN TESTED IN A SIMULATED ENVIROMENT (COOJA)
+ * 
+ * @ Author: Peter Marcus Hoveling
+ * @ Date: 31/03/2021
+*/
+
 /* Macro definition */
 #define LOG_MODULE "Knock detector"
 #define LOG_LEVEL LOG_LEVEL_DBG
@@ -27,17 +36,30 @@ PROCESS(acceptState, "Accept state for when password is correct");
 AUTOSTART_PROCESSES(&secretKnockDetector);
 /*-----------------------------------------------------------*/
 
+/**
+ * Initial process, calling the bttnProcess and timerProcess
+ * ---
+ * Arguments: secretKnockDetector, ev, data
+ * Retruns: None
+*/
 PROCESS_THREAD(secretKnockDetector, ev, data)
 {
-
     PROCESS_BEGIN();
     printf("\n");
     LOG_INFO("* * * PROGRAM HAS BEEN STARTED, PRESS BUTTON FOR INSTRUCTIONS * * * \n");
+    printf("\n");
     process_start(&bttnProcess, NULL);
     process_start(&timerProcess, NULL);
     PROCESS_END();
 }
 
+/**
+ * Button process which waits for button event to call the timerProcess.
+ * When calling the timer process, we send a custom bttn_pressed_event
+ * ---
+ * Arguments: bttnProcess, ev, data
+ * Returns: None
+*/
 PROCESS_THREAD(bttnProcess, ev, data)
 {
     PROCESS_BEGIN();
@@ -49,6 +71,15 @@ PROCESS_THREAD(bttnProcess, ev, data)
     PROCESS_END();
 }
 
+/**
+ * Timer process, for when the user starts the recording of his/her passcode.
+ * The timer is set to 5 seconds, where while the timer is active we send the
+ * logged timestamp for the bttn presses to the loggerProcess, and send  a 
+ * custom termination event for the logger process when the time has expired.
+ * ---
+ * Arguments: timerProcess, ev, data
+ * Returns: None
+*/
 PROCESS_THREAD(timerProcess, ev, data)
 {
     static struct timer timer; // Define timer vatiable
@@ -62,7 +93,7 @@ PROCESS_THREAD(timerProcess, ev, data)
     termination_event = process_alloc_event();
 
     PROCESS_WAIT_EVENT_UNTIL(ev == bttn_pressed_event);
-    leds_on(LEDS_BLUE);
+    leds_on(0x40);
     LOG_INFO("Bttn pressed!, you now have 5 seconds to record your secret knocks \n");
 
     timer_set(timerPtr, CLOCK_SECOND * 5); // Initiate timer to trigger event
@@ -70,7 +101,6 @@ PROCESS_THREAD(timerProcess, ev, data)
     isRecording = true;
     while (isRecording == true)
     {
-        // printf("Time remaining: %d \n", (int)timer_remaining(timerPtr));
         PROCESS_WAIT_EVENT_UNTIL(ev == sensors_event && data == &button_sensor);
 
         if (timer_expired(timerPtr))
@@ -89,6 +119,15 @@ PROCESS_THREAD(timerProcess, ev, data)
     PROCESS_END();
 }
 
+/**
+ * Process for continuously logging the sent data from the timerProcess.
+ * This process is initated from the timerProcess and only stops logging
+ * bttn press input, when a custom termination event is sent. When this is done
+ * the user code is printed.
+ * ---
+ * Arguments: secretCodeLogger, ev, data
+ * Returns: None
+*/
 PROCESS_THREAD(secretCodeLogger, ev, data)
 {
     static int arrayCounter = 0;
@@ -110,7 +149,7 @@ PROCESS_THREAD(secretCodeLogger, ev, data)
             break;
         }
     }
-     leds_off(LEDS_BLUE);
+    leds_off(0x40);
     printf("\n");
     printf("---------- YOUR SECRET CODE: ---------- \n");
     int arraySize = sizeof(userPasscodeArray) / sizeof(userPasscodeArray[0]);
@@ -128,6 +167,16 @@ PROCESS_THREAD(secretCodeLogger, ev, data)
     PROCESS_END();
 }
 
+/**
+ * Process for validating the attempted code matches the original.
+ * The process continuously validates user input from a 5 seconds
+ * counter. Every 5 seconds, the logic from the dtw.h file is called
+ * and a match is attempted. If the 'isPasswordAccepted' function returns
+ * true, the passcodes match and the user is granted access.
+ * ---
+ * Arguments: secretCodeValidator, ev, data
+ * Returns: None
+*/
 PROCESS_THREAD(secretCodeValidator, ev, data)
 {
     static struct timer timer; // Define timer vatiable
@@ -149,7 +198,7 @@ PROCESS_THREAD(secretCodeValidator, ev, data)
         // printf("Press bttn to attemp to log in \n");
         PROCESS_WAIT_EVENT_UNTIL(ev == sensors_event && data == &button_sensor);
         timer_set(timerPtr, CLOCK_SECOND * 5);
-        leds_on(LEDS_BLUE);
+        leds_on(0x40);
         printf("Enter your code... \n");
         isRecording = true;
 
@@ -161,7 +210,7 @@ PROCESS_THREAD(secretCodeValidator, ev, data)
 
             if (timer_expired(timerPtr))
             {
-                leds_off(LEDS_BLUE);
+                leds_off(0x40);
                 printf("\n");
                 printf("---------- YOUR ATTEMPTED PASSCODE: ---------- \n");
                 int arraySize = sizeof(userTrialArray) / sizeof(userTrialArray[0]);
@@ -211,6 +260,14 @@ PROCESS_THREAD(secretCodeValidator, ev, data)
     PROCESS_END();
 }
 
+/**
+ * The 'acceptstate' process, for when the user enteres the correct code
+ * This process serves no other purpose than to show some simple ascii art
+ * and visually show the code was accepted.
+ * ---
+ * Arguments: accepState, ev, dat
+ * Returns: None
+*/
 PROCESS_THREAD(acceptState, ev, data)
 {
     PROCESS_BEGIN();
