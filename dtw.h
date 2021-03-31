@@ -15,8 +15,8 @@
 */
 
 /* GLOBAL */
-static double matrix[10][10];
-static double cost[10][10];
+static double distanceMatrix[10][10];
+static double costMatrix[10][10];
 
 /* Prototyping */
 void calcDistanceMatrix(int userPasscodeArray[], int userTrialArray[]);
@@ -45,11 +45,11 @@ void calcDistanceMatrix(int userPasscodeArray[], int userTrialArray[])
         {
             if (userPasscodeArray[j] - userTrialArray[i] < 0)
             {
-                matrix[i][j] = (userPasscodeArray[j] - userTrialArray[i]) * (-1);
+                distanceMatrix[i][j] = (userPasscodeArray[j] - userTrialArray[i]) * (-1);
             }
             else
             {
-                matrix[i][j] = userPasscodeArray[j] - userTrialArray[i];
+                distanceMatrix[i][j] = userPasscodeArray[j] - userTrialArray[i];
             }
         }
     }
@@ -72,15 +72,15 @@ void computeAccumulatedCostMatrix(int userPasscodeArray[], int userTrialArray[])
     uint8_t j;
 
     /* Initialization */
-    cost[0][0] = matrix[0][0];
+    costMatrix[0][0] = distanceMatrix[0][0];
 
     for (i = 0; i < 10; i++)
     {
-        cost[i][0] = matrix[i][0] + cost[i - 1][0];
+        costMatrix[i][0] = distanceMatrix[i][0] + costMatrix[i - 1][0];
     }
     for (j = 0; j < 10; j++)
     {
-        cost[0][j] = matrix[0][j] + cost[0][j - 1];
+        costMatrix[0][j] = distanceMatrix[0][j] + costMatrix[0][j - 1];
     }
 
     /* Accumulated */
@@ -88,11 +88,11 @@ void computeAccumulatedCostMatrix(int userPasscodeArray[], int userTrialArray[])
     {
         for (j = 0; j < 10; j++)
         {
-            cost[i][j] = findSmallest(
-                             cost[i - 1][j],
-                             cost[i][j - 1],
-                             cost[i - 1][j - 1]) +
-                         matrix[i][j];
+            costMatrix[i][j] = findSmallest(
+                             costMatrix[i - 1][j],
+                             costMatrix[i][j - 1],
+                             costMatrix[i - 1][j - 1]) +
+                         distanceMatrix[i][j];
         }
     }
     // displayCostMatrix();
@@ -113,7 +113,7 @@ bool isPasswordAccepted(int userPasscodeArray[], int userTrialArray[])
 {
     computeAccumulatedCostMatrix(userPasscodeArray, userTrialArray);
 
-    double currentElement = cost[0][0];
+    double currentElement = costMatrix[0][0];
     int shortestPath[30];
 
     uint8_t i = 0;
@@ -124,9 +124,9 @@ bool isPasswordAccepted(int userPasscodeArray[], int userTrialArray[])
 
     while (row != 10 && column != 10)
     {
-        double right = cost[row][column + 1];
-        double crooked = cost[row + 1][column + 1];
-        double down = cost[row + 1][column];
+        double right = costMatrix[row][column + 1];
+        double crooked = costMatrix[row + 1][column + 1];
+        double down = costMatrix[row + 1][column];
 
         double matchArray[] = {right, crooked, down};
         double smallest = matchArray[0];
@@ -209,7 +209,7 @@ void displayCostMatrix()
         int columns = 0;
         while (columns < 10)
         {
-            printf("%d \t ", (int)cost[row][columns]);
+            printf("%d \t ", (int)costMatrix[row][columns]);
             columns++;
         }
         printf("\n");
@@ -234,7 +234,7 @@ void displayDistanceMatrix()
         int columns = 0;
         while (columns < 10)
         {
-            printf("%d \t ", (int)matrix[row][columns]);
+            printf("%d \t ", (int)distanceMatrix[row][columns]);
             columns++;
         }
         printf("\n");
