@@ -111,7 +111,7 @@ costMatrix = [ 951   693   383   254   106   65    122   222   402   628  ]
              [ 777   1224  1293  1035  665   501   279   193   113   147  ]
              [ 689   1170  1571  1393  949   744   448   319   159   113  ]
 ```
-The validating function tranverses through the matrix and chooses the lowest values for every neighbour [row][column].
+The validating function tranverses through the matrix and chooses the lowest values for every neighbour (either right, crooked or down).
 For this example matrix, we would end up with the following array:
 ```
 double valueArray [] = {3, 25, 30, 38, 48, 65, 82, 101, 113, 113} 
