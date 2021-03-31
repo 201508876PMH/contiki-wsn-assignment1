@@ -69,7 +69,7 @@ After 5 seconds:
 
 Your time for entering code expired or the passcode was incorrect!...try again.
 ```
-Or successtate:
+On successtate:
 ```
 You entered the CORRECT passcode!
 The program ends here, reboot for program restart.
@@ -98,7 +98,7 @@ The program ends here, reboot for program restart.
 88 vanishing point 888888888888888888888888888888888888888888888(FL)888
 ```
 ## How the passcode is validated
-By using the dtw (dynamic time warping) algorithmn, we essentially calucalte the distance matrix, the the warping function and the cost function. From this we end up having a matrix with the various cost values represented as such (exampl):
+By using the dtw (dynamic time warping) algorithmn, we essentially calculate the distance matrix, the the warping function and the cost function. From this we end up having a matrix with the various cost values represented as such (example):
 ```
              [ 3     67    211   398   545   545   545   545   545   545  ] 
              [ 39    25    127   272   491   751   879   922   1002  1048 ]	 
@@ -111,7 +111,7 @@ costMatrix = [ 951   693   383   254   106   65    122   222   402   628  ]
              [ 777   1224  1293  1035  665   501   279   193   113   147  ]
              [ 689   1170  1571  1393  949   744   448   319   159   113  ]
 ```
-The validating function tranverses through the matrix and chooses the lowest values for every neighbour (either right, crooked or down).
+The validating function traverses through the matrix and chooses the lowest values for every neighbour (either right, crooked or down).
 For this example matrix, we would end up with the following array:
 ```
 double valueArray [] = {3, 25, 30, 38, 48, 65, 82, 101, 113, 113} 
