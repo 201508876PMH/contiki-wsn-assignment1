@@ -48,5 +48,72 @@ After 5 seconds:
 ---------- YOUR SECRET CODE: ----------
 420 0 0 0 0 0 0 0 0 0
 ---------------------------------------
-```
 
+Succes! Your secret 'knock' code was recorded.
+Device is now locked until correct 'knock'-series is entered!
+```
+Pressing the button:
+```
+Enter your code... 
+```
+Pressing the button/attempting to log in:
+```
+Button was pressed at: <time of button press ex: 428>
+Button was pressed at: <time of button press ex: 356>
+```
+After 5 seconds:
+```
+---------- YOUR ATTEMPTED PASSCODE: ----------
+420 356 0 0 0 0 0 0 0 0
+-----------------------------------------------
+
+Your time for entering code expired or the passcode was incorrect!...try again.
+```
+Or successtate:
+```
+You entered the CORRECT passcode!
+The program ends here, reboot for program restart.
+
+8888888888888888888 YOU MAY ENTER THE SECRET ROOM 888888888888888888888
+88.._|      | `-.  | `.  -_-_ _-_  _-  _- -_ -  .'|   |.'|     |  _..88
+88   `-.._  |    |`!  |`.  -_ -__ -_ _- _-_-  .'  |.;'   |   _.!-'|  88
+88      | `-!._  |  `;!  ;. _______________ ,'| .-' |   _!.i'     |  88
+88..__  |     |`-!._ | `.| |_______________||."'|  _!.;'   |     _|..88
+88   |``"..__ |    |`";.| i|_|MMMMMMMMMMM|_|'| _!-|   |   _|..-|'    88
+88   |      |``--..|_ | `;!|l|MMoMMMMoMMM|1|.'j   |_..!-'|     |     88
+88   |      |    |   |`-,!_|_|MMMMP'YMMMM|_||.!-;'  |    |     |     88
+88___|______|____!.,.!,.!,!|d|MMMo * loMM|p|,!,.!.,.!..__|_____|_____88
+88      |     |    |  |  | |_|MMMMb,dMMMM|_|| |   |   |    |      |  88
+88      |     |    |..!-;'i|r|MPYMoMMMMoM|r| |`-..|   |    |      |  88
+88      |    _!.-j'  | _!,"|_|M<>MMMMoMMM|_||!._|  `i-!.._ |      |  88
+88     _!.-'|    | _."|  !;|1|MbdMMoMMMMM|l|`.| `-._|    |``-.._  |  88
+88..-i'     |  _.''|  !-| !|_|MMMoMMMMoMM|_|.|`-. | ``._ |     |``"..88
+88   |      |.|    |.|  !| |u|MoMMMMoMMMM|n||`. |`!   | `".    |     88
+88   |  _.-'  |  .'  |.' |/|_|MMMMoMMMMoM|_|! |`!  `,.|    |-._|     88
+88  _!"'|     !.'|  .'| .'|[@]MMMMMMMMMMM[@] \|  `. | `._  |   `-._  88
+88-'    |   .'   |.|  |/| /                 \|`.  |`!    |.|      |`-88
+88      |_.'|   .' | .' |/                   \  \ |  `.  | `._-Lee|  88
+88     .'   | .'   |/|  /                     \ |`!   |`.|    `.  |  88
+88  _.'     !'|   .' | /                       \|  `  |  `.    |`.|  88
+88 vanishing point 888888888888888888888888888888888888888888888(FL)888
+```
+## How the passcode is validated
+By using the dtw (dynamic time warping) algorithmn, we essentially calucalte the distance matrix, the the warping function and the cost function. From this we end up having a matrix with the various cost values represented as such (exampl):
+```
+             [ 3     67    211   398   545   545   545   545   545   545  ] 
+             [ 39    25    127   272   491   751   879   922   1002  1048 ]	 
+             [ 175   100   30    78    200   363   600   880   1240  1408 ]	 
+             [ 367   231   81    38    104   211   392   616   920   1270 ]	 
+             [ 635   438   208   122   48    79    184   332   560   834  ]
+costMatrix = [ 951   693   383   254   106   65    122   222   402   628  ]
+             [ 1018  1022  632   460   238   156   82    108   214   366  ]
+             [ 801   1175  926   711   415   292   144   101   162   269  ]
+             [ 777   1224  1293  1035  665   501   279   193   113   147  ]
+             [ 689   1170  1571  1393  949   744   448   319   159   113  ]
+```
+The validating function tranverses through the matrix and chooses the lowest values for every neighbour [row][column].
+For this example matrix, we would end up with the following array:
+```
+double valueArray [] = {3, 25, 30, 38, 48, 65, 82, 101, 113, 113} 
+```
+The threshold has been set to 100. So for this example, the attempted passcode would **not** be accepted.
