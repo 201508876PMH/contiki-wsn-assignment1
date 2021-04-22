@@ -9,7 +9,7 @@
 /**
  * @ This secretKnockDetector.c file is ment to be used in conjuction
  * @ with the seperate logic file called dtw.h
- * @ THIS PROGRAM HAS ONLY BEEN TESTED IN A SIMULATED ENVIROMENT (COOJA)
+ * @ THIS PROGRAM HAS ONLY BEEN TESTED IN A SIMULATED ENVIRONMENT (COOJA)
  * 
  * @ Author: Peter Marcus Hoveling
  * @ Date: 31/03/2021
